@@ -1,0 +1,8 @@
+{
+    "telemetry.enableTelemetry": false,
+    "explorer.confirmDelete": false,
+    "gitlens.defaultDateLocale": null,
+    "hardhat.telemetry": true,
+    "mochaExplorer.files": "tes{t,ts}/**/*.{j,t}s",
+    "mochaExplorer.configFile": ""
+}
