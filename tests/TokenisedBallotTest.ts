@@ -30,9 +30,12 @@ describe("TokenisedBallot", async function () {
     const VOTE_TOKEN_ID = "G5V";
 
     beforeEach(async () => {
+        accounts = await ethers.getSigners();
+
         const voteContractFactory = await ethers.getContractFactory("MyToken");
         voteToken = await voteContractFactory.deploy();
         await voteToken.deployed();
+        console.log("vote contract deployed at " + voteToken.address);
         //this needs to be converted from the Byte32 to String.  It must be 
         //done for each of them.  it could be done with a helper function to
         //loop through the array for each String entrty, or a map.
@@ -40,8 +43,9 @@ describe("TokenisedBallot", async function () {
         ballotContract = await ballotContractFactory.deploy(
             convertStringArrayToBytes32(PROPOSALS),
             voteToken.address, TARGET_BLOCK) as Ballot;
-        
-        accounts = await ethers.getSigners();
+        await ballotContract.deployed();
+        console.log("ballot contract deployed at " + ballotContract.address);
+
     });
 
     describe("when the contract is deployed", async () => {
@@ -60,8 +64,17 @@ describe("TokenisedBallot", async function () {
             }
         });
         
+        it("Initial voter token balance is 0", async () => {
+            //need to mine a transaction first to get a block.
+            const voterTokenBalance = await voteToken.balanceOf(accounts[0].address);
+            expect(voterTokenBalance).to.equal(0);
+        });
+        
         it("Has 0 vote power until delegation", async () => {
-            const Account0VotePower = await ballotContract.votePower(accounts[0].address);
+            //need to mine a transaction first to get a block.
+            const voterTokenBalance = await voteToken.balanceOf(accounts[0].address);
+
+            const Account0VotePower = await ballotContract.connect(accounts[0]).votePower(accounts[0].address);
             expect(0).to.equal(Account0VotePower);
         });
     });
