@@ -54,7 +54,7 @@ async function main() {
   let votePower = await contract20V.getVotes(voter.address);
   console.log(`Voter vote power post-mint is ${votePower}`); //still 0 
 
-  const delegateTx = await contract20V.connect(voter).delegate(voter.address);
+  const delegateTx = await contract20V.attach(voter.address).delegate(voter.address);
   
   let votePowerPostDelegateToSelf = await contract20V.getVotes(voter.address);
   //same as #tokens now
