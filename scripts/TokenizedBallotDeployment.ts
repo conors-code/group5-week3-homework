@@ -1,7 +1,13 @@
-import { ethers } from "hardhat";  //or ethers if not using contract factory
+import { ethers } from "hardhat"; //or ethers if not using contract factory
 import * as dotenv from "dotenv";
-import { Ballot, Ballot__factory, ERC20Votes__factory, MyToken__factory } from "../typechain-types";
+import {
+  Ballot,
+  Ballot__factory,
+  ERC20Votes__factory,
+  MyToken__factory,
+} from "../typechain-types";
 import { Wallet } from "ethers";
+import { InfuraProvider } from "@ethersproject/providers";
 dotenv.config();
 
 const TEST_MINT_VALUE = ethers.utils.parseEther("10");
@@ -16,16 +22,15 @@ function convertStringArrayToBytes32(array: string[]) {
 }
 
 async function main() {
-  
   let args = process.argv;
   let params = args.slice(2); //slice(2) returns 3rd and following parts
   let proposals;
 
   console.log(params);
 
-  //Deploy on Goerli accepting in an account address:  
-  const provider = ethers.getDefaultProvider("goerli");
-  //const provider = ethers.getDefaultProvider("goerli", {infura});
+  //Deploy on Goerli accepting in an account address:
+  // const provider = ethers.getDefaultProvider("goerli");
+  const provider = new InfuraProvider("goerli", process.env.INFURA_KEY);
   console.log(process.env.PRIVATE_KEY?.length); //don't show the private key
   console.log(process.env.MNEMONIC?.length); //don't show the mnemonic
 
@@ -43,22 +48,25 @@ async function main() {
 
   //1st param is the number of blocks to add to deployment time lastBlock, to give
   //  time for voting etc.  The rest of the params are the proposals
-const lastBlock = await (await provider.getBlock("latest")).number;
- let targetBlock;
+  const lastBlock = await (await provider.getBlock("latest")).number;
+  let targetBlock;
   if (params.length > 0) {
     if (params.length > 1 && Number(params[0])) {
       const targetBlockOffset = Number(params[0]);
-      console.log(`Targeting block ${targetBlockOffset} blocks into future for voting`);
+      console.log(
+        `Targeting block ${targetBlockOffset} blocks into future for voting`
+      );
       targetBlock = lastBlock + targetBlockOffset;
       //the rest of the params are the proposals.
       proposals = params.slice(1);
     } else {
       throw new Error("Proposals must be provided for deployment");
-    }    
+    }
   } else {
-    throw new Error("Target block offset and proposals must be provided for deployment");
+    throw new Error(
+      "Target block offset and proposals must be provided for deployment"
+    );
   }
-
 
   //Get the latest block and add, say 3, to give a chance to make changes before
   //  voting power is checked
@@ -73,11 +81,15 @@ const lastBlock = await (await provider.getBlock("latest")).number;
   console.log("Deploying Ballot contract");
   let ballotContract: Ballot;
 
-  ballotContract = await ballotContractFactory.deploy(
+  ballotContract = (await ballotContractFactory.deploy(
     convertStringArrayToBytes32(proposals),
-    voteTokenContract.address, targetBlock) as Ballot;
+    voteTokenContract.address,
+    targetBlock
+  )) as Ballot;
   await ballotContract.deployed();
-  console.log("Tokenised ballot contract deployed at " + ballotContract.address);
+  console.log(
+    "Tokenised ballot contract deployed at " + ballotContract.address
+  );
 }
 
 main().catch((error) => {
