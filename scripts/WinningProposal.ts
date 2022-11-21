@@ -26,14 +26,12 @@ async function main() {
 
   const winningProposalNumber = await ballotContract.winningProposal();
 
-  const voteCount = await ballotContract.winnerVoteCount();
-
   const winnerNameBytes32 = await ballotContract.winnerName();
 
   const winnerName = ethers.utils.parseBytes32String(winnerNameBytes32);
 
   console.log(
-    `Winning proposal index is ${winningProposalNumber} named ${winnerName}, with ${voteCount} votes.`
+    `Winning proposal index is ${winningProposalNumber} named ${winnerName}.`
   );
 }
 
