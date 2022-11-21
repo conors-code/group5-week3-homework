@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 import { Wallet, ethers } from "ethers";
-import { InfuraProvider } from "@ethersproject/providers";
+import { AlchemyProvider, InfuraProvider } from "@ethersproject/providers";
 import { Ballot, Ballot__factory, MyToken } from "../typechain-types";
 import { MyToken__factory } from "../typechain-types/factories/contracts/ERC20Votes.sol/MyToken__factory";
 dotenv.config();
@@ -11,16 +11,17 @@ async function main() {
   
 
   //Deploy on Goerli accepting in an account address:
-  //const provider = new AlchemyProvider("goerli", process.env.ALCHEMY_API_KEY);
-  const provider = new InfuraProvider("goerli", process.env.INFURA_KEY);
+  const provider = new AlchemyProvider("goerli", process.env.ALCHEMY_API_KEY);
+  //const provider = new InfuraProvider("goerli", process.env.INFURA_KEY);
   const wallet = new Wallet(process.env.PRIVATE_KEY ?? "");
   const signer = wallet.connect(provider);
+  console.log(`Signer (minting requested by) address: ${signer.address}`);
   const voteContractAddress = params[0];
   const mintRecipientAccount = params[1];
   const numOfTokensToMintInput = params[2];
 
   const voteTokenFactory = new MyToken__factory(signer);
-  let voteTokenContract: MyToken = await voteTokenFactory.attach(voteContractAddress);
+  let voteTokenContract: MyToken = voteTokenFactory.attach(voteContractAddress);
 
   const numOfTokensToMint = ethers.utils.parseEther(numOfTokensToMintInput);
   const mintTx =  await voteTokenContract.mint(mintRecipientAccount, numOfTokensToMint);

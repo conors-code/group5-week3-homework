@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 import { Wallet } from "ethers";
-import { InfuraProvider } from "@ethersproject/providers";
+import { AlchemyProvider, InfuraProvider } from "@ethersproject/providers";
 import { Ballot, Ballot__factory } from "../typechain-types";
 
 dotenv.config();
@@ -11,9 +11,11 @@ async function main() {
   let proposals;
 
   //Deploy on Goerli accepting in an account address:
-  const provider = new InfuraProvider("goerli", process.env.INFURA_KEY);
+  //const provider = new InfuraProvider("goerli", process.env.INFURA_KEY);
+  const provider = new AlchemyProvider("goerli", process.env.ALCHEMY_API_KEY);
   const wallet = new Wallet(process.env.PRIVATE_KEY ?? "");
   const signer = wallet.connect(provider);
+  console.log(`Signer (voting from) address: ${signer.address}`);
   const contractAddress = params[0];
   const proposalNumber = params[1];
   const voteAmount = params[2];
