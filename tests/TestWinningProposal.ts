@@ -85,7 +85,7 @@ describe("Ballot Winner", async function () {
         `Winner name should be ${expectedWinnerName} but is ${winnerName}.`
       ).to.equal(expectedWinnerName);
     });
-    
+    /* //commented out as Seth removed the winnerVoteCount from the contract.
     it("must have more than 0 votes", async () => {
       //vote for a proposal to give it the most votes.  index should match proposal name
       //const chosenProposalIndex = 2;
@@ -100,6 +100,6 @@ describe("Ballot Winner", async function () {
       expect(winnerVoteCount,
         `Winner number of votes should be ${VOTE_AMOUNT} but is ${winnerVoteCount}.`
       ).to.equal(VOTE_AMOUNT);
-    });
+    });*/
   });
 });
