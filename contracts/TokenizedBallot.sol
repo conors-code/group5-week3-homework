@@ -70,4 +70,13 @@ contract Ballot {
     {
         winnerName_ = proposals[winningProposal()].name;
     }
+
+    // Calls winningProposal() function to get the index
+    // of the winner contained in the proposals array and then
+    // returns the vote count of the winner
+    function winnerVoteCount() external view
+            returns (uint winnerVoteCount_)
+    {
+        winnerVoteCount_ = proposals[winningProposal()].voteCount ;
+    }
 }
