@@ -13,6 +13,14 @@ contract Ballot {
         bytes32 name;   // short name (up to 32 bytes)
         uint voteCount; // number of accumulated votes
     }
+    
+    //struct for returning all proposal info in an array
+    struct ProposalInfo {
+        uint idx; //index position
+        bytes32 name;   // short name (up to 32 bytes)
+        uint voteCount; // number of accumulated votes
+        bytes32 isWinning; //whether or not this proposal is winning
+    }
 
     mapping(address => uint256) public votePowerSpent;
 
@@ -78,5 +86,28 @@ contract Ballot {
             returns (uint winnerVoteCount_)
     {
         winnerVoteCount_ = proposals[winningProposal()].voteCount ;
+    }
+
+    // Calls winningProposal() function to get the index
+    // of the winner contained in the proposals array and then
+    // returns the vote count of the winner
+    function proposalsInfo() external view
+            returns (ProposalInfo[] memory)
+    {
+        ProposalInfo[] memory allProposalsInfo = new ProposalInfo[](proposals.length);
+        for (uint i = 0; i < proposals.length; i++) {
+          bytes32 currentProposalIsWinning = 'No';
+          if (i == winningProposal()) {
+            currentProposalIsWinning = '**Yes!**';
+          }
+          ProposalInfo memory currentProposal = ProposalInfo({
+                idx: i,
+                name: proposals[i].name,
+                voteCount: proposals[i].voteCount,
+                isWinning: currentProposalIsWinning
+            });
+          allProposalsInfo[i] = currentProposal;
+        }
+        return allProposalsInfo;
     }
 }
